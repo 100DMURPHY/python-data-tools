@@ -23,7 +23,29 @@
     afterNavigate(() => {
         isSidebarOpen = false;
     });
+
+    // Dynamic SEO
+    $: currentPath = $page.url.pathname;
+    $: currentItem = navSections
+        .flatMap((s) => s.items)
+        .find((i) => `${base}${i.path}` === currentPath);
+
+    $: title = currentItem
+        ? `${currentItem.title} | Python Data Tools`
+        : "Python Data Tools | Compare Pandas, Polars, DuckDB";
+    $: description = currentItem
+        ? `Learn how to handle ${currentItem.title} using Pandas, Polars, DuckDB, and BigQuery.`
+        : "The definitive guide to comparing Python data wrangling syntax across platforms.";
 </script>
+
+<svelte:head>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+</svelte:head>
 
 <div class="layout">
     <Navbar on:toggleSidebar={toggleSidebar} on:toggleChat={toggleChat} />

@@ -4,6 +4,7 @@
 
     export let isOpen = false;
 
+    // Chat State
     let messages = [
         {
             role: "system",
@@ -17,14 +18,38 @@
         },
     ];
     let input = "";
-    let engine = null;
     let isLoading = false;
     let progress = "";
+
+    // Mode State
+    let mode = "local"; // 'local' or 'byok'
+    let apiKey = "";
+    let apiBase = "https://api.openai.com/v1";
+    let model = "gpt-4o-mini";
+    let showSettings = false;
+
+    // Local Mode State
+    let engine = null;
     let isModelLoaded = false;
+    const selectedModel = "Llama-3.1-8B-Instruct-q4f16_1-MLC";
 
-    const selectedModel = "Llama-3.1-8B-Instruct-q4f16_1-MLC"; // Efficient and high quality
+    onMount(() => {
+        const savedKey = localStorage.getItem("guardian_api_key");
+        const savedBase = localStorage.getItem("guardian_api_base");
+        const savedMode = localStorage.getItem("guardian_mode");
+        if (savedKey) apiKey = savedKey;
+        if (savedBase) apiBase = savedBase;
+        if (savedMode) mode = savedMode;
+    });
 
-    async function initEngine() {
+    async function saveSettings() {
+        localStorage.setItem("guardian_api_key", apiKey);
+        localStorage.setItem("guardian_api_base", apiBase);
+        localStorage.setItem("guardian_mode", mode);
+        showSettings = false;
+    }
+
+    async function initLocalEngine() {
         if (engine) return;
         isLoading = true;
 
@@ -37,7 +62,10 @@
             isModelLoaded = true;
         } catch (err) {
             console.error("Web-LLM Init Error:", err);
-            progress = "Error: This feature requires a WebGPU-enabled browser.";
+            progress =
+                "Error: This feature requires a WebGPU-enabled browser. Switching to BYOK mode is recommended.";
+            // Auto-switch to settings if local fails
+            showSettings = true;
         } finally {
             isLoading = false;
         }
@@ -46,17 +74,28 @@
     async function sendMessage() {
         if (!input.trim() || isLoading) return;
 
-        if (!isModelLoaded) {
-            await initEngine();
-            if (!isModelLoaded) return;
-        }
-
         const userMsg = { role: "user", content: input };
         messages = [...messages, userMsg];
         const currentInput = input;
         input = "";
-
         isLoading = true;
+
+        if (mode === "local") {
+            await handleLocalMessage(userMsg);
+        } else {
+            await handleBYOKMessage();
+        }
+    }
+
+    async function handleLocalMessage(userMsg) {
+        if (!isModelLoaded) {
+            await initLocalEngine();
+            if (!isModelLoaded) {
+                isLoading = false;
+                return;
+            }
+        }
+
         try {
             const reply = await engine.chat.completions.create({
                 messages: messages.map((m) => ({
@@ -75,8 +114,57 @@
                 {
                     role: "assistant",
                     content:
-                        "Sorry, I encountered an error. Make sure your browser supports WebGPU.",
+                        "Local AI Error. Check WebGPU support or switch to BYOK mode.",
                 },
+            ];
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    async function handleBYOKMessage() {
+        if (!apiKey) {
+            messages = [
+                ...messages,
+                {
+                    role: "assistant",
+                    content:
+                        "Please provide an API key in settings to use BYOK mode.",
+                },
+            ];
+            showSettings = true;
+            isLoading = false;
+            return;
+        }
+
+        try {
+            const response = await fetch(`${apiBase}/chat/completions`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                    model: model,
+                    messages: messages.map((m) => ({
+                        role: m.role,
+                        content: m.content,
+                    })),
+                }),
+            });
+
+            const data = await response.json();
+            if (data.error) throw new Error(data.error.message);
+
+            const assistantMsg = {
+                role: "assistant",
+                content: data.choices[0].message.content,
+            };
+            messages = [...messages, assistantMsg];
+        } catch (err) {
+            messages = [
+                ...messages,
+                { role: "assistant", content: `API Error: ${err.message}` },
             ];
         } finally {
             isLoading = false;
@@ -105,55 +193,108 @@
                 <div>
                     <h3>The Guardian</h3>
                     <p class="status">
-                        {isModelLoaded ? "Online" : "Ready to Load"}
+                        {mode === "local"
+                            ? isModelLoaded
+                                ? "Local Mode (GPU)"
+                                : "Local Mode (Ready)"
+                            : "Cloud Mode (BYOK)"}
                     </p>
                 </div>
             </div>
-            <button class="close-btn" on:click={() => (isOpen = false)}
-                >&times;</button
-            >
+            <div class="header-actions">
+                <button
+                    class="settings-btn"
+                    on:click={() => (showSettings = !showSettings)}>⚙️</button
+                >
+                <button class="close-btn" on:click={() => (isOpen = false)}
+                    >&times;</button
+                >
+            </div>
         </div>
 
         <div class="chat-messages">
-            {#each messages.filter((m) => m.role !== "system") as msg}
-                <div class="message {msg.role}">
-                    <div class="message-content">
-                        {msg.content}
+            {#if showSettings}
+                <div class="settings-panel">
+                    <h4>Settings</h4>
+                    <div class="setting-item">
+                        <label>Inference Mode</label>
+                        <select bind:value={mode}>
+                            <option value="local">Local (Web-LLM/WebGPU)</option
+                            >
+                            <option value="byok">Cloud (BYOK Key)</option>
+                        </select>
                     </div>
-                </div>
-            {/each}
 
-            {#if isLoading}
-                <div class="message assistant loading">
-                    <div class="message-content">
-                        {#if !isModelLoaded}
-                            <div class="progress-bar">
-                                <p>Downloading Model (~4GB)...</p>
-                                <p class="progress-detail">{progress}</p>
-                            </div>
-                        {:else}
-                            <span class="typing-dot"></span>
-                            <span class="typing-dot"></span>
-                            <span class="typing-dot"></span>
-                        {/if}
-                    </div>
+                    {#if mode === "byok"}
+                        <div class="setting-item">
+                            <label>OpenAI-Compatible Key</label>
+                            <input
+                                type="password"
+                                bind:value={apiKey}
+                                placeholder="sk-..."
+                            />
+                        </div>
+                        <div class="setting-item">
+                            <label>API Base URL</label>
+                            <input
+                                type="text"
+                                bind:value={apiBase}
+                                placeholder="https://api.openai.com/v1"
+                            />
+                        </div>
+                    {/if}
+
+                    <button class="save-btn" on:click={saveSettings}
+                        >Save & Core</button
+                    >
+                    <p class="settings-note">
+                        Local mode needs WebGPU. BYOK mode uses your own API
+                        credits.
+                    </p>
                 </div>
+            {:else}
+                {#each messages.filter((m) => m.role !== "system") as msg}
+                    <div class="message {msg.role}">
+                        <div class="message-content">
+                            {msg.content}
+                        </div>
+                    </div>
+                {/each}
+
+                {#if isLoading}
+                    <div class="message assistant loading">
+                        <div class="message-content">
+                            {#if mode === "local" && !isModelLoaded}
+                                <div class="progress-bar">
+                                    <p>Initializing Local LLM...</p>
+                                    <p class="progress-detail">{progress}</p>
+                                </div>
+                            {:else}
+                                <span class="typing-dot"></span>
+                                <span class="typing-dot"></span>
+                                <span class="typing-dot"></span>
+                            {/if}
+                        </div>
+                    </div>
+                {/if}
             {/if}
         </div>
 
-        <div class="chat-input">
-            <textarea
-                placeholder="Ask about Pandas, Polars..."
-                bind:value={input}
-                on:keydown={handleKeydown}
-            ></textarea>
-            <button
-                on:click={sendMessage}
-                disabled={isLoading || !input.trim()}
-            >
-                {isModelLoaded ? "Send" : "Initialize"}
-            </button>
-        </div>
+        {#if !showSettings}
+            <div class="chat-input">
+                <textarea
+                    placeholder="Ask about Pandas, Polars..."
+                    bind:value={input}
+                    on:keydown={handleKeydown}
+                ></textarea>
+                <button
+                    on:click={sendMessage}
+                    disabled={isLoading || !input.trim()}
+                >
+                    {mode === "local" && !isModelLoaded ? "Init" : "Send"}
+                </button>
+            </div>
+        {/if}
     </div>
 {/if}
 
@@ -212,6 +353,12 @@
         gap: 0.75rem;
     }
 
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
     .bot-icon {
         font-size: 1.5rem;
     }
@@ -226,6 +373,19 @@
         font-size: 0.75rem;
         color: var(--accent-green);
         margin: 0;
+    }
+
+    .settings-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+
+    .settings-btn:hover {
+        opacity: 1;
     }
 
     .close-btn {
@@ -244,6 +404,57 @@
         flex-direction: column;
         gap: 1rem;
         background: #0f172a;
+    }
+
+    .settings-panel {
+        color: white;
+    }
+
+    .settings-panel h4 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .setting-item {
+        margin-bottom: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .setting-item label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    .setting-item input,
+    .setting-item select {
+        padding: 0.6rem;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: white;
+        outline: none;
+    }
+
+    .save-btn {
+        width: 100%;
+        background: var(--accent-blue);
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+
+    .settings-note {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 1rem;
+        line-height: 1.4;
     }
 
     .message {
@@ -303,7 +514,7 @@
         border-color: var(--accent-blue);
     }
 
-    button {
+    button.send-btn {
         background: var(--accent-blue);
         color: white;
         border: none;
@@ -313,48 +524,6 @@
         cursor: pointer;
         transition: opacity 0.2s;
         height: 40px;
-    }
-
-    button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .progress-bar {
-        font-size: 0.8rem;
-    }
-
-    .progress-detail {
-        color: var(--text-muted);
-        margin-top: 0.25rem;
-    }
-
-    .typing-dot {
-        display: inline-block;
-        width: 6px;
-        height: 6px;
-        background: var(--text-muted);
-        border-radius: 50%;
-        margin-right: 3px;
-        animation: typing 1.4s infinite;
-    }
-
-    .typing-dot:nth-child(2) {
-        animation-delay: 0.2s;
-    }
-    .typing-dot:nth-child(3) {
-        animation-delay: 0.4s;
-    }
-
-    @keyframes typing {
-        0%,
-        60%,
-        100% {
-            transform: translateY(0);
-        }
-        30% {
-            transform: translateY(-4px);
-        }
     }
 
     @media (max-width: 600px) {
