@@ -5,6 +5,11 @@
 #     "pandas",
 # ]
 # ///
+# %% [markdown]
+# ### CSV Loading with Pandas
+# This example demonstrates how to load a CSV file, with self-healing data generation.
+
+# %%
 import pandas as pd
 import pathlib
 
@@ -17,6 +22,7 @@ if not path.exists():
         "city": ["NY", "SF", "LA"]
     }).to_csv(path, index=False)
 
+# %%
 # Basic CSV loading
 df = pd.read_csv(path)
 print(f"Pandas loaded {len(df)} rows:")

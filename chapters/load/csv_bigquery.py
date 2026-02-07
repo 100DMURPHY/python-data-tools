@@ -6,6 +6,11 @@
 #     "pandas",
 # ]
 # ///
+# %% [markdown]
+# ### CSV Loading with BigQuery
+# Demonstrates loading local data to BigQuery.
+
+# %%
 import unittest.mock as mock
 from google.cloud import bigquery
 import pandas as pd
@@ -20,6 +25,7 @@ if not path.exists():
         "city": ["NY", "SF", "LA"]
     }).to_csv(path, index=False)
 
+# %%
 # Mock the client for CI/verification purposes
 client = mock.MagicMock(spec=bigquery.Client)
 
@@ -35,6 +41,7 @@ job_config = bigquery.LoadJobConfig(
     autodetect=True,
 )
 
+# %%
 # Mocking the load_table_from_file behavior
 job = client.load_table_from_file(None, table_id, job_config=job_config)
 job.result() 

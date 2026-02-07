@@ -5,7 +5,18 @@
 #     "duckdb",
 # ]
 # ///
-import duckdb
+# %% [markdown]
+# ### CSV Loading with DuckDB
+# Using SQL to query CSV files directly.
+
+# %% [markdown]
+# ### CSV Loading with BigQuery
+# Demonstrates loading local data to BigQuery.
+
+# %%
+import unittest.mock as mock
+from google.cloud import bigquery
+import pandas as pd
 import pathlib
 
 # Self-healing: Generate data if missing for portability
@@ -18,8 +29,8 @@ if not path.exists():
         "city": ["NY", "SF", "LA"]
     }).to_csv(path, index=False)
 
-# Query CSV directly
-result = duckdb.sql(f"SELECT * FROM '{path}'")
-print(f"DuckDB found {len(result.fetchall())} rows:")
+# %%
+# %%
+# Basic CSV loading via SQL
 duckdb.sql(f"SELECT * FROM '{path}'").show()
 # </load_csv_duckdb>

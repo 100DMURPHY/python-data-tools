@@ -5,6 +5,11 @@
 #     "polars",
 # ]
 # ///
+# %% [markdown]
+# ### CSV Loading with Polars
+# Demonstrates high-performance CSV loading.
+
+# %%
 import polars as pl
 import pathlib
 
@@ -17,6 +22,7 @@ if not path.exists():
         "city": ["NY", "SF", "LA"]
     }).write_csv(path)
 
+# %%
 # Basic CSV loading (eager)
 df = pl.read_csv(path)
 print(f"Polars loaded {len(df)} rows:")
