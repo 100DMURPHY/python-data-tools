@@ -3,10 +3,31 @@
     import { page } from "$app/stores";
     import { base } from "$app/paths";
     import navSections from "$lib/nav.json";
+    import Navbar from "$lib/components/Navbar.svelte";
+    import { afterNavigate } from "$app/navigation";
+
+    let isSidebarOpen = false;
+
+    function toggleSidebar() {
+        isSidebarOpen = !isSidebarOpen;
+    }
+
+    // Close sidebar after navigation on mobile
+    afterNavigate(() => {
+        isSidebarOpen = false;
+    });
 </script>
 
 <div class="layout">
-    <nav class="sidebar">
+    <Navbar on:toggleSidebar={toggleSidebar} />
+
+    {#if isSidebarOpen}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div class="sidebar-overlay" on:click={toggleSidebar}></div>
+    {/if}
+
+    <nav class="sidebar" class:open={isSidebarOpen}>
         <div class="logo">
             <a href="{base}/">
                 <h1>🐍 Python Data Tools</h1>
@@ -63,6 +84,20 @@
         position: fixed;
         height: 100vh;
         overflow-y: auto;
+        z-index: 200;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 150;
     }
 
     .logo h1 {
@@ -140,11 +175,21 @@
 
     @media (max-width: 900px) {
         .sidebar {
-            display: none;
+            transform: translateX(-100%);
         }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            display: block;
+        }
+
         .content {
             margin-left: 0;
             padding: 1rem;
+            margin-top: 60px; /* Space for fixed navbar */
         }
     }
 </style>

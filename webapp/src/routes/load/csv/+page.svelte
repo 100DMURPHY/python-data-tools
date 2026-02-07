@@ -21,32 +21,38 @@
 
     <h2>Quick Reference</h2>
 
-    <table class="reference-table">
-        <thead>
-            <tr>
-                <th>Library</th>
-                <th>Syntax</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>🐼 Pandas</td>
-                <td><code>pd.read_csv("file.csv")</code></td>
-            </tr>
-            <tr>
-                <td>🐻‍❄️ Polars</td>
-                <td><code>pl.read_csv("file.csv")</code></td>
-            </tr>
-            <tr>
-                <td>🦆 DuckDB</td>
-                <td><code>duckdb.read_csv("file.csv")</code></td>
-            </tr>
-            <tr>
-                <td>☁️ BigQuery</td>
-                <td><code>client.load_table_from_uri(...)</code></td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-container">
+        <table class="reference-table">
+            <thead>
+                <tr>
+                    <th>Library</th>
+                    <th>Syntax</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>🐼 Pandas</td>
+                    <td><code>pd.read_csv("file.csv")</code></td>
+                </tr>
+                <tr>
+                    <td>🐻‍❄️ Polars</td>
+                    <td><code>pl.read_csv("file.csv")</code></td>
+                </tr>
+                <tr>
+                    <td>🦆 DuckDB</td>
+                    <td><code>duckdb.read_csv("file.csv")</code></td>
+                </tr>
+                <tr>
+                    <td>☁️ BigQuery</td>
+                    <td
+                        ><code
+                            >client.load_table_from_file(..., format="CSV")</code
+                        ></td
+                    >
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <h2>Full Examples</h2>
 

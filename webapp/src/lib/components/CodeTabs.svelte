@@ -104,10 +104,18 @@
         display: flex;
         background: var(--bg-secondary);
         border-bottom: 1px solid var(--border-color);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Hide scrollbar for Chrome/Safari */
+    }
+
+    .tab-bar::-webkit-scrollbar {
+        display: none;
     }
 
     .tab {
         flex: 1;
+        min-width: 100px; /* Prevent tabs from being too small on mobile */
         padding: 0.75rem 1rem;
         background: transparent;
         border: none;
