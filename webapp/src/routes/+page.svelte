@@ -26,6 +26,8 @@
       <span class="icon">🐻‍❄️</span>
       <span class="name">Polars</span>
       <span class="desc">High-perf</span>
+    <div class="cta-row">
+      <a href="{base}/setup" class="btn primary">🚀 Get Started with UV</a>
     </div>
   </div>
 </div>

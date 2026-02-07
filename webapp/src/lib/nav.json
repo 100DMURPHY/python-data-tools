@@ -1,5 +1,16 @@
 [
     {
+        "section": "Getting Started",
+        "path": "/setup",
+        "items": [
+            {
+                "id": "setup",
+                "title": "🚀 Environment Setup",
+                "path": "/setup"
+            }
+        ]
+    },
+    {
         "section": "Load",
         "path": "/load",
         "items": [
