@@ -20,6 +20,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 CHAPTERS_DIR = os.path.join(PROJECT_ROOT, "chapters")
 OUTPUT_FILE = os.path.join(PROJECT_ROOT, "webapp/src/data/examples.json")
+NOTEBOOKS_DIR = os.path.join(PROJECT_ROOT, "webapp/static/notebooks")
 
 # Regex for markers:
 # Python: # <key> ... # </key>
@@ -66,6 +67,33 @@ def parse_file(filepath):
     return results
 
 
+def convert_to_notebook(filepath, relative_path):
+    """Convert a .py script to .ipynb using jupytext."""
+    # Create output filename
+    filename = os.path.basename(filepath)
+    notebook_name = filename.replace(".py", ".ipynb")
+    
+    # Preserve subdirectory structure: load/csv_pandas.py -> load/csv_pandas.ipynb
+    relative_dir = os.path.dirname(relative_path)
+    target_dir = os.path.join(NOTEBOOKS_DIR, relative_dir)
+    os.makedirs(target_dir, exist_ok=True)
+    
+    target_path = os.path.join(target_dir, notebook_name)
+    
+    print(f"Generating Notebook: {relative_path.replace('.py', '.ipynb')} ...", end=" ", flush=True)
+    try:
+        subprocess.run(
+            ["uv", "run", "--with", "jupytext", "jupytext", "--to", "notebook", filepath, "-o", target_path],
+            capture_output=True,
+            check=True
+        )
+        print("✅")
+        return True
+    except Exception as e:
+        print(f"❌ ({str(e)})")
+        return False
+
+
 def main():
     """
     New output structure:
@@ -77,6 +105,9 @@ def main():
     """
     all_examples = {}
     
+    # Ensure Notebooks dir exists
+    os.makedirs(NOTEBOOKS_DIR, exist_ok=True)
+    
     # Walk through all directories in chapters/
     for root, dirs, files in os.walk(CHAPTERS_DIR):
         for file in files:
@@ -85,13 +116,14 @@ def main():
                 
             language = get_language(file)
             filepath = os.path.join(root, file)
+            relative_path = os.path.relpath(filepath, CHAPTERS_DIR)
             
             snippets = parse_file(filepath)
             
-            # For Python files, we also try to run them to capture output
+            # For Python files, we capture output AND generate notebooks
             file_output = ""
             if language == "python":
-                print(f"Executing {file.relative_to(PROJECT_ROOT) if hasattr(file, 'relative_to') else file} ...", end=" ", flush=True)
+                print(f"Executing {file} ...", end=" ", flush=True)
                 try:
                     res = subprocess.run(
                         ["uv", "run", filepath],
@@ -108,6 +140,9 @@ def main():
                 except Exception as e:
                     print("❌ (System error)")
                     file_output = f"System error: {str(e)}"
+                
+                # Jupytext Conversion
+                convert_to_notebook(filepath, relative_path)
 
             for key, code in snippets.items():
                 all_examples[key] = {

@@ -13,17 +13,16 @@
 # %%
 import unittest.mock as mock
 from google.cloud import bigquery
-import pandas as pd
 import pathlib
+import urllib.request
 
-# Self-healing: Generate data if missing for portability
-path = pathlib.Path("data.csv")
-if not path.exists():
-    pd.DataFrame({
-        "id": [1, 2, 3],
-        "name": ["Alice", "Bob", "Charlie"],
-        "city": ["NY", "SF", "LA"]
-    }).to_csv(path, index=False)
+# Standard "Wrangling Hero" dataset: Palmer Penguins
+CSV_URL = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv"
+DATA_PATH = pathlib.Path("penguins.csv")
+
+# Self-healing: Download if missing
+if not DATA_PATH.exists():
+    urllib.request.urlretrieve(CSV_URL, DATA_PATH)
 
 # %%
 # Mock the client for CI/verification purposes
@@ -33,7 +32,7 @@ client = mock.MagicMock(spec=bigquery.Client)
 # client = bigquery.Client()
 
 # Load CSV from local file to BigQuery table
-table_id = "project.dataset.table_name"
+table_id = "project.dataset.penguins"
 
 job_config = bigquery.LoadJobConfig(
     source_format=bigquery.SourceFormat.CSV,
@@ -43,8 +42,9 @@ job_config = bigquery.LoadJobConfig(
 
 # %%
 # Mocking the load_table_from_file behavior
-job = client.load_table_from_file(None, table_id, job_config=job_config)
-job.result() 
+with open(DATA_PATH, "rb") as source_file:
+    job = client.load_table_from_file(source_file, table_id, job_config=job_config)
+    job.result()  # Wait for the job to complete
 
 print(f"Mock BigQuery load triggered for {table_id}")
 # </load_csv_bigquery>

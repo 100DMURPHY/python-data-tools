@@ -12,25 +12,29 @@
 # %%
 import duckdb
 import pathlib
-import json
+import urllib.request
 
-# Self-healing
-json_path = pathlib.Path("data.json")
-if not json_path.exists():
-    with open(json_path, "w") as f:
-        json.dump([{"id": 1, "v": "a"}, {"id": 2, "v": "b"}], f)
+# Standard "Wrangling Hero" dataset: Palmer Penguins
+CSV_URL = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv"
+JSON_PATH = pathlib.Path("penguins.json")
+NDJSON_PATH = pathlib.Path("penguins.jsonl")
 
-ndjson_path = pathlib.Path("data.jsonl")
-if not ndjson_path.exists():
-    with open(ndjson_path, "w") as f:
-        f.write('{"id": 10, "v": "X"}\n{"id": 20, "v": "Y"}\n')
+# Self-healing: Download and convert if missing
+if not JSON_PATH.exists() or not NDJSON_PATH.exists():
+    csv_temp = pathlib.Path("penguins.csv")
+    if not csv_temp.exists():
+        urllib.request.urlretrieve(CSV_URL, csv_temp)
+    # Use DuckDB itself to convert CSV to JSON and NDJSON
+    duckdb.sql(f"COPY (SELECT * FROM read_csv_auto('{csv_temp}')) TO '{JSON_PATH}' (FORMAT JSON, ARRAY TRUE)")
+    duckdb.sql(f"COPY (SELECT * FROM read_csv_auto('{csv_temp}')) TO '{NDJSON_PATH}' (FORMAT JSON)")
 
 # %%
 # Query JSON directly via SQL
+# DuckDB treats JSON files as virtual tables with auto-schema detection
 print("Standard JSON via SQL:")
-duckdb.sql(f"SELECT * FROM read_json_auto('{json_path}')").show()
+duckdb.sql(f"SELECT species, island, island FROM read_json_auto('{JSON_PATH}') LIMIT 5").show()
 
 # Query NDJSON
 print("\nNDJSON via SQL:")
-duckdb.sql(f"SELECT * FROM read_json_auto('{ndjson_path}')").show()
+duckdb.sql(f"SELECT * FROM read_json_auto('{NDJSON_PATH}') LIMIT 5").show()
 # </load_json_duckdb>

@@ -12,33 +12,42 @@
 # %%
 import polars as pl
 import pathlib
+import urllib.request
 import json
 
-# Self-healing: Generate standard JSON
-json_path = pathlib.Path("data.json")
-if not json_path.exists():
-    data = [{"id": i, "name": f"user_{i}"} for i in range(5)]
-    with open(json_path, "w") as f:
-        json.dump(data, f)
+# Standard "Wrangling Hero" dataset: Palmer Penguins
+CSV_URL = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv"
+JSON_PATH = pathlib.Path("penguins.json")
+NDJSON_PATH = pathlib.Path("penguins.jsonl")
 
-# Self-healing: Generate NDJSON
-ndjson_path = pathlib.Path("data.jsonl")
-if not ndjson_path.exists():
-    with open(ndjson_path, "w") as f:
-        for i in range(5):
-            f.write(json.dumps({"id": i, "score": i * 1.5}) + "\n")
+# Self-healing: Download and convert if missing
+if not JSON_PATH.exists() or not NDJSON_PATH.exists():
+    csv_temp = pathlib.Path("penguins.csv")
+    if not csv_temp.exists():
+        urllib.request.urlretrieve(CSV_URL, csv_temp)
+    
+    # Use Polars itself for high-performance conversion
+    df_temp = pl.read_csv(csv_temp)
+    
+    # Save as standard JSON (Array of objects)
+    df_temp.write_json(JSON_PATH)
+    
+    # Save as NDJSON (Newline Delimited)
+    df_temp.write_ndjson(NDJSON_PATH)
 
 # %%
 # Load standard JSON (Eager)
-df_json = pl.read_json(json_path)
+# Polars parses standard JSON into memory efficiently
+df_json = pl.read_json(JSON_PATH)
 print("Standard JSON (Polars):")
-print(df_json)
+print(df_json.head())
 
 # %%
 # Load NDJSON (Fastest)
-df_ndjson = pl.read_ndjson(ndjson_path)
+# Newline Delimited JSON is the preferred format for high-speed Polars loading
+df_ndjson = pl.read_ndjson(NDJSON_PATH)
 print("\nNDJSON (Polars):")
-print(df_ndjson)
+print(df_ndjson.head())
 
 # Scan NDJSON (Lazy - Great for large logs)
 # df_lazy = pl.scan_ndjson(ndjson_path).collect()

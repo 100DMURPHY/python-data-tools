@@ -12,34 +12,36 @@
 # %%
 import pandas as pd
 import pathlib
+import urllib.request
 import json
 
-# Self-healing: Generate standard JSON
-json_path = pathlib.Path("data.json")
-if not json_path.exists():
-    data = [
-        {"id": 1, "user": "alice", "meta": {"login": "2024-01-01"}},
-        {"id": 2, "user": "bob", "meta": {"login": "2024-01-02"}}
-    ]
-    with open(json_path, "w") as f:
-        json.dump(data, f)
+# Standard "Wrangling Hero" dataset: Palmer Penguins
+CSV_URL = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv"
+JSON_PATH = pathlib.Path("penguins.json")
+NDJSON_PATH = pathlib.Path("penguins.jsonl")
 
-# Self-healing: Generate NDJSON (Newline Delimited)
-ndjson_path = pathlib.Path("data.jsonl")
-if not ndjson_path.exists():
-    with open(ndjson_path, "w") as f:
-        f.write('{"id": 1, "val": 10}\n')
-        f.write('{"id": 2, "val": 20}\n')
+# Self-healing: Download and convert if missing
+if not JSON_PATH.exists() or not NDJSON_PATH.exists():
+    csv_temp = pathlib.Path("penguins.csv")
+    if not csv_temp.exists():
+        urllib.request.urlretrieve(CSV_URL, csv_temp)
+    df_temp = pd.read_csv(csv_temp)
+    
+    # Save as standard JSON (Array of objects)
+    df_temp.to_json(JSON_PATH, orient="records")
+    
+    # Save as NDJSON (Newline Delimited)
+    df_temp.to_json(NDJSON_PATH, orient="records", lines=True)
 
 # %%
 # Load standard JSON
-df_json = pd.read_json(json_path)
+df_json = pd.read_json(JSON_PATH)
 print("Standard JSON (Pandas):")
 print(df_json.head())
 
 # %%
 # Load NDJSON (lines=True)
-df_ndjson = pd.read_json(ndjson_path, lines=True)
+df_ndjson = pd.read_json(NDJSON_PATH, lines=True)
 print("\nNDJSON (lines=True):")
 print(df_ndjson.head())
 # </load_json_pandas>

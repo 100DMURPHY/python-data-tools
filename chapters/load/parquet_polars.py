@@ -14,20 +14,30 @@
 # %%
 import polars as pl
 import pathlib
-import pandas as pd # For initial data gen
+import urllib.request
+import pandas as pd # For initial conversion
 
-# Self-healing
-path = pathlib.Path("data.parquet")
-if not path.exists():
-    pd.DataFrame({"id": range(100)}).to_parquet(path)
+# Standard "Wrangling Hero" dataset: Palmer Penguins
+CSV_URL = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv"
+DATA_PATH = pathlib.Path("penguins.parquet")
+
+# Self-healing: Download and convert if missing
+if not DATA_PATH.exists():
+    csv_temp = pathlib.Path("penguins.csv")
+    if not csv_temp.exists():
+        urllib.request.urlretrieve(CSV_URL, csv_temp)
+    pd.read_csv(csv_temp).to_parquet(DATA_PATH)
 
 # %%
 # Load Parquet (Eager)
-df = pl.read_parquet(path)
-print(f"Polars loaded {len(df)} rows.")
+# Polars is built on Apache Arrow for ultra-fast Parquet performance
+df = pl.read_parquet(DATA_PATH)
+print("Polars loaded penguins Parquet:")
+print(df.head())
 
 # Scan Parquet (Lazy - Recommended for Large Data)
-query = pl.scan_parquet(path).select(["id"]).limit(5)
-print("Lazy scan result:")
+# This allows Polars to skip reading columns/rows not needed
+query = pl.scan_parquet(DATA_PATH).select(["species", "island"]).limit(5)
+print("\nLazy scan result:")
 print(query.collect())
 # </load_parquet_polars>

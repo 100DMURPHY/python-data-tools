@@ -3,6 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #     "google-cloud-bigquery",
+#     "pandas",
 # ]
 # ///
 # %% [markdown]
@@ -13,20 +14,25 @@
 import unittest.mock as mock
 from google.cloud import bigquery
 import pathlib
-import json
+import urllib.request
+import pandas as pd # For initial conversion
 
-# Self-healing: Generate NDJSON (Native to BigQuery load)
-ndjson_path = pathlib.Path("data.jsonl")
-if not ndjson_path.exists():
-    with open(ndjson_path, "w") as f:
-        f.write('{"id": 1, "status": "active"}\n')
-        f.write('{"id": 2, "status": "pending"}\n')
+# Standard "Wrangling Hero" dataset: Palmer Penguins
+CSV_URL = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv"
+NDJSON_PATH = pathlib.Path("penguins.jsonl")
+
+# Self-healing: Download and convert to NDJSON (Native to BigQuery load)
+if not NDJSON_PATH.exists():
+    csv_temp = pathlib.Path("penguins.csv")
+    if not csv_temp.exists():
+        urllib.request.urlretrieve(CSV_URL, csv_temp)
+    pd.read_csv(csv_temp).to_json(NDJSON_PATH, orient="records", lines=True)
 
 # %%
 # Mock the client
 client = mock.MagicMock(spec=bigquery.Client)
 
-table_id = "project.dataset.json_table"
+table_id = "project.dataset.penguins_json"
 job_config = bigquery.LoadJobConfig(
     source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
     autodetect=True,
@@ -34,7 +40,8 @@ job_config = bigquery.LoadJobConfig(
 
 # %%
 # Load NDJSON to BigQuery
-with open(ndjson_path, "rb") as source_file:
+# BigQuery requires Newline Delimited JSON (NDJSON) for direct file loads
+with open(NDJSON_PATH, "rb") as source_file:
     job = client.load_table_from_file(source_file, table_id, job_config=job_config)
     job.result()
 

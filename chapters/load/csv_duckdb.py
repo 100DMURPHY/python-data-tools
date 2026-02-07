@@ -12,19 +12,20 @@
 
 # %%
 import duckdb
-import pandas as pd
 import pathlib
+import urllib.request
 
-# Self-healing: Generate data if missing for portability
-path = pathlib.Path("data.csv")
-if not path.exists():
-    pd.DataFrame({
-        "id": [1, 2, 3],
-        "name": ["Alice", "Bob", "Charlie"],
-        "city": ["NY", "SF", "LA"]
-    }).to_csv(path, index=False)
+# Standard "Wrangling Hero" dataset: Palmer Penguins
+CSV_URL = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv"
+DATA_PATH = pathlib.Path("penguins.csv")
+
+# Self-healing: Download if missing
+if not DATA_PATH.exists():
+    urllib.request.urlretrieve(CSV_URL, DATA_PATH)
 
 # %%
 # Basic CSV loading via SQL
-duckdb.sql(f"SELECT * FROM '{path}'").show()
+# DuckDB can query CSV files directly
+print("DuckDB querying penguins via SQL:")
+duckdb.sql(f"SELECT * FROM '{DATA_PATH}' LIMIT 5").show()
 # </load_csv_duckdb>

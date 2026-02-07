@@ -13,18 +13,23 @@
 # %%
 import pandas as pd
 import pathlib
+import urllib.request
 
-# Self-healing: Generate data if missing
-path = pathlib.Path("data.parquet")
-if not path.exists():
-    pd.DataFrame({
-        "id": range(100),
-        "val": range(100, 200)
-    }).to_parquet(path)
+# Standard "Wrangling Hero" dataset: Palmer Penguins
+CSV_URL = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv"
+DATA_PATH = pathlib.Path("penguins.parquet")
+
+# Self-healing: Download and convert if missing
+if not DATA_PATH.exists():
+    csv_temp = pathlib.Path("penguins.csv")
+    if not csv_temp.exists():
+        urllib.request.urlretrieve(CSV_URL, csv_temp)
+    pd.read_csv(csv_temp).to_parquet(DATA_PATH)
 
 # %%
 # Load Parquet
-df = pd.read_parquet(path)
-print(f"Pandas loaded Parquet with {len(df)} rows.")
+# Pandas uses the pyarrow engine by default for Parquet
+df = pd.read_parquet(DATA_PATH)
+print(f"Pandas loaded penguins Parquet with {len(df)} rows.")
 print(df.head())
 # </load_parquet_pandas>

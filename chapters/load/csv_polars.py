@@ -12,23 +12,24 @@
 # %%
 import polars as pl
 import pathlib
+import urllib.request
 
-# Self-healing: Generate data if missing for portability
-path = pathlib.Path("data.csv")
-if not path.exists():
-    pl.DataFrame({
-        "id": [1, 2, 3],
-        "name": ["Alice", "Bob", "Charlie"],
-        "city": ["NY", "SF", "LA"]
-    }).write_csv(path)
+# Standard "Wrangling Hero" dataset: Palmer Penguins
+CSV_URL = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv"
+DATA_PATH = pathlib.Path("penguins.csv")
+
+# Self-healing: Download if missing
+if not DATA_PATH.exists():
+    urllib.request.urlretrieve(CSV_URL, DATA_PATH)
 
 # %%
 # Basic CSV loading (eager)
-df = pl.read_csv(path)
-print(f"Polars loaded {len(df)} rows:")
+# Polars is extremely fast at CSV parsing
+df = pl.read_csv(DATA_PATH)
+print("Polars loaded penguins dataset:")
 print(df.head())
 
 # Lazy loading (recommended for large files)
-lf = pl.scan_csv(path)
+lf = pl.scan_csv(DATA_PATH)
 df = lf.collect()
 # </load_csv_polars>
