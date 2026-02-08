@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://100dmurphy.github.io/python-data-tools"
+BASE_URL = "https://pythondatatools.github.io/python-data-tools"
 NAV_PATH = "webapp/src/lib/nav.json"
 OUTPUT_PATH = "webapp/static/sitemap.xml"
 

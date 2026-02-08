@@ -3,7 +3,7 @@
     export let task = "";
     export let section = "load"; // Default to load
 
-    const repoBase = "100DMURPHY/python-data-tools";
+    const repoBase = "pythondatatools/python-data-tools";
     const branch = "main";
 
     const libraries = ["pandas", "polars", "duckdb", "bigquery"];
@@ -23,7 +23,7 @@
     // Derived URLs for portability
     $: rawUrl = `https://raw.githubusercontent.com/${repoBase}/${branch}/chapters/${section}/${task}_${activeTab}.py`;
     $: uvRunCmd = `uv run ${rawUrl}`;
-    $: colabUrl = `https://colab.research.google.com/github/${repoBase}/blob/${branch}/webapp/static/notebooks/${section}/${task}_${activeTab}.ipynb`;
+    $: colabUrl = `https://colab.research.google.com/github/${repoBase}/blob/${branch}/notebooks/${section}/${task}_${activeTab}.ipynb`;
     $: jupyterCmd = `uvx --from jupytext jupytext --to notebook --execute ${rawUrl}`;
 
     let copied = false;

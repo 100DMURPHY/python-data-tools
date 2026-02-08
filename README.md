@@ -26,7 +26,7 @@ A multi-platform comparison of data wrangling techniques from **"Python for Data
 ## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/python-data-tools.git
+git clone https://github.com/pythondatatools/python-data-tools.git
 cd python-data-tools
 
 # Install Python dependencies

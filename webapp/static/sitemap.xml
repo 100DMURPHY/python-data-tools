@@ -1,121 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/load/cloud</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/load/cloud</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/load/csv</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/load/csv</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/load/database</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/load/database</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/load/json</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/load/json</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/load/parquet</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/load/parquet</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/output/bigquery</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/output/bigquery</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/output/database</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/output/database</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/output/files</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/output/files</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/setup</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/setup</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/special/charts</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/special/charts</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/special/excel</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/special/excel</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/special/llm</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/special/llm</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/special/ml</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/special/ml</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/transform/aggregate</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/transform/aggregate</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/transform/filter</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/transform/filter</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/transform/join</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/transform/join</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/transform/pivot</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/transform/pivot</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/transform/sort</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/transform/sort</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://100dmurphy.github.io/python-data-tools/transform/window</loc>
+    <loc>https://pythondatatools.github.io/python-data-tools/transform/window</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

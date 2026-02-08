@@ -20,7 +20,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 CHAPTERS_DIR = os.path.join(PROJECT_ROOT, "chapters")
 OUTPUT_FILE = os.path.join(PROJECT_ROOT, "webapp/src/data/examples.json")
-NOTEBOOKS_DIR = os.path.join(PROJECT_ROOT, "webapp/static/notebooks")
+NOTEBOOKS_DIR = os.path.join(PROJECT_ROOT, "notebooks")
 
 # Regex for markers:
 # Python: # <key> ... # </key>

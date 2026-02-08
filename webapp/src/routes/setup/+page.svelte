@@ -29,7 +29,7 @@
         </p>
         <p>Try it now with our Pandas example:</p>
         <pre><code
-                >uv run https://raw.githubusercontent.com/100DMURPHY/python-data-tools/main/chapters/load/csv_pandas.py</code
+                >uv run https://raw.githubusercontent.com/pythondatatools/python-data-tools/main/chapters/load/csv_pandas.py</code
             ></pre>
         <div class="tip">
             <span class="icon">✨</span>
