@@ -129,14 +129,16 @@ def main():
                         ["uv", "run", filepath],
                         capture_output=True,
                         text=True,
-                        check=True,
-                        timeout=30
+                        timeout=120
                     )
-                    file_output = res.stdout
-                    print("✅")
-                except subprocess.CalledProcessError as e:
-                    print("❌ (Execution failed)")
-                    file_output = f"Execution failed (Exit {e.returncode}):\n{e.stderr}"
+                    file_output = res.stdout + res.stderr
+                    if res.returncode == 0:
+                        print("✅")
+                    else:
+                        print(f"❌ (Execution failed with exit code {res.returncode})")
+                except subprocess.TimeoutExpired:
+                    print("❌ (Execution timed out)")
+                    file_output = f"System error: Command '{filepath}' timed out after 120 seconds"
                 except Exception as e:
                     print("❌ (System error)")
                     file_output = f"System error: {str(e)}"
