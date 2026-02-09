@@ -1,106 +1,76 @@
 <script>
     import CodeTabs from "$lib/components/CodeTabs.svelte";
-    import VersionBadge from "$lib/components/VersionBadge.svelte";
-    import { base } from "$app/paths";
+    import Icon from "$lib/components/Icon.svelte";
     import examples from "../../../data/examples.json";
 </script>
 
 <div class="page">
-    <h1>Load Parquet / Arrow</h1>
-
-    <p class="intro">
-        Parquet is the gold standard for analytical data storage. It is
-        columnar, highly compressed, and natively supported by all modern data
-        tools.
-    </p>
-
-    <div class="version-row">
-        <VersionBadge library="pandas" version="2.2" />
-        <VersionBadge library="polars" version="1.x" />
-        <VersionBadge library="duckdb" version="1.1" />
-        <VersionBadge library="bigquery" version="3.x" />
-    </div>
-
-    <h2>Quick Reference</h2>
-
-    <div class="table-container">
-        <table class="reference-table">
-            <thead>
-                <tr>
-                    <th>Library</th>
-                    <th>Syntax</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>🐼 Pandas</td>
-                    <td><code>pd.read_parquet("file.parquet")</code></td>
-                </tr>
-                <tr>
-                    <td>🐻‍❄️ Polars</td>
-                    <td><code>pl.read_parquet("file.parquet")</code></td>
-                </tr>
-                <tr>
-                    <td>🦆 DuckDB</td>
-                    <td><code>duckdb.read_parquet("file.parquet")</code></td>
-                </tr>
-                <tr>
-                    <td>☁️ BigQuery</td>
-                    <td
-                        ><code
-                            >client.load_table_from_file(..., format="PARQUET")</code
-                        ></td
-                    >
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="note">
-        <span class="icon">💡</span>
-        <p>
-            <strong>Pro Tip:</strong> Use <code>pl.scan_parquet()</code> in Polars
-            for "Lazy" execution. This allows the engine to optimize the query before
-            reading any data.
+    <div class="page-header">
+        <div class="breadcrumb">
+            <span>Load</span>
+            <span class="sep">/</span>
+            <span class="current">Parquet</span>
+        </div>
+        <h1>Load Parquet Files</h1>
+        <p class="intro">
+            Parquet is a columnar format optimized for analytics. It's smaller,
+            faster, and preserves data types — perfect for larger datasets.
         </p>
     </div>
 
-    <h2>Full Examples</h2>
+    <section class="quick-ref">
+        <h2>Quick Reference</h2>
+        <div class="ref-grid">
+            <div class="ref-card pandas">
+                <Icon name="pandas" size={20} color="var(--pandas-color)" />
+                <code>pd.read_parquet("file.parquet")</code>
+            </div>
+            <div class="ref-card polars">
+                <Icon name="polars" size={20} color="var(--polars-color)" />
+                <code>pl.read_parquet("file.parquet")</code>
+            </div>
+            <div class="ref-card duckdb">
+                <Icon name="duckdb" size={20} color="var(--duckdb-color)" />
+                <code>duckdb.read_parquet("file.parquet")</code>
+            </div>
+            <div class="ref-card bigquery">
+                <Icon name="cloud" size={20} color="var(--bigquery-color)" />
+                <code>load_table_from_uri()</code>
+            </div>
+        </div>
+    </section>
 
-    <CodeTabs {examples} task="load_parquet" />
+    <section class="examples">
+        <h2>Full Examples</h2>
+        <p class="section-intro">
+            Click each tab to see the complete, runnable code for each library.
+        </p>
+        <CodeTabs {examples} task="load_parquet" section="load" />
+    </section>
 
-    <h2>When to Use Which</h2>
-
-    <div class="when-cards">
-        <div class="card pandas">
-            <h3>🐼 Pandas</h3>
-            <p>
-                Standard analytical workflows. Full feature set for data
-                exploration. Requires <code>pyarrow</code> installed.
-            </p>
+    <section class="when-to-use">
+        <h2>When to Use Parquet</h2>
+        <div class="info-cards">
+            <div class="info-card">
+                <h3>✓ Use Parquet When</h3>
+                <ul>
+                    <li>Dataset is larger than a few hundred MB</li>
+                    <li>You need to preserve data types exactly</li>
+                    <li>Reading only certain columns (columnar efficiency)</li>
+                    <li>Working with cloud storage (S3, GCS)</li>
+                </ul>
+            </div>
+            <div class="info-card warning">
+                <h3>✗ Stick with CSV When</h3>
+                <ul>
+                    <li>You need human-readable files</li>
+                    <li>Sharing with non-technical users</li>
+                    <li>Dataset is small (&lt;10MB)</li>
+                    <li>Editing files manually</li>
+                </ul>
+            </div>
         </div>
-        <div class="card polars">
-            <h3>🐻‍❄️ Polars</h3>
-            <p>
-                When performance is critical. Polars' multithreaded reader is
-                often significantly faster than Pandas/Arrow.
-            </p>
-        </div>
-        <div class="card duckdb">
-            <h3>🦆 DuckDB</h3>
-            <p>
-                Querying existing files on disk without a separate load step.
-                Great for ad-hoc "SQL on Files" analysis.
-            </p>
-        </div>
-        <div class="card bigquery">
-            <h3>☁️ BigQuery</h3>
-            <p>
-                Moving local results to the cloud for heavy lifting or
-                persisting final analytical datasets.
-            </p>
-        </div>
-    </div>
+    </section>
 </div>
 
 <style>
@@ -108,122 +78,139 @@
         max-width: 900px;
     }
 
+    .page-header {
+        margin-bottom: var(--space-8);
+    }
+
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: var(--space-3);
+    }
+
+    .breadcrumb .sep {
+        color: var(--border-color);
+    }
+    .breadcrumb .current {
+        color: var(--accent-primary);
+    }
+
     h1 {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-        color: var(--text-primary);
+        font-size: 2.25rem;
+        margin-bottom: var(--space-3);
     }
 
     .intro {
-        color: var(--text-secondary);
         font-size: 1.1rem;
-        margin-bottom: 2rem;
+        color: var(--text-secondary);
+        max-width: 650px;
     }
 
-    .version-row {
-        display: flex;
-        gap: 0.75rem;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1.5rem;
-        scrollbar-width: none;
-    }
-
-    .version-row::-webkit-scrollbar {
-        display: none;
+    section {
+        margin-bottom: var(--space-10);
     }
 
     h2 {
         font-size: 1.25rem;
-        margin-top: 2.5rem;
-        margin-bottom: 1rem;
-        color: var(--text-primary);
+        margin-bottom: var(--space-4);
+        margin-top: 0;
     }
 
-    .reference-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 2rem;
-    }
-
-    .reference-table th,
-    .reference-table td {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .reference-table th {
-        background: var(--bg-secondary);
-        font-weight: 500;
-        color: var(--text-muted);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-    }
-
-    .reference-table code {
-        background: var(--bg-tertiary);
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.875rem;
-    }
-
-    .note {
-        display: flex;
-        gap: 1rem;
-        padding: 1rem;
-        background: color-mix(in srgb, var(--accent-blue) 10%, transparent);
-        border: 1px solid
-            color-mix(in srgb, var(--accent-blue) 20%, transparent);
-        border-radius: 8px;
-        margin-bottom: 2rem;
-    }
-
-    .note .icon {
-        font-size: 1.25rem;
-    }
-
-    .note p {
-        margin: 0;
+    .section-intro {
         font-size: 0.9rem;
-        color: var(--text-secondary);
+        color: var(--text-muted);
+        margin-bottom: var(--space-4);
     }
 
-    .when-cards {
+    .ref-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--space-3);
     }
 
-    .card {
-        padding: 1.25rem;
-        border-radius: 8px;
+    .ref-card {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
         background: var(--bg-secondary);
         border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: var(--space-4);
     }
 
-    .card h3 {
+    .ref-card code {
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        background: transparent;
+        padding: 0;
+    }
+
+    .ref-card.pandas {
+        border-left: 3px solid var(--pandas-color);
+    }
+    .ref-card.polars {
+        border-left: 3px solid var(--polars-color);
+    }
+    .ref-card.duckdb {
+        border-left: 3px solid var(--duckdb-color);
+    }
+    .ref-card.bigquery {
+        border-left: 3px solid var(--bigquery-color);
+    }
+
+    .info-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--space-4);
+    }
+
+    .info-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: var(--space-5);
+        border-left: 3px solid var(--accent-success);
+    }
+
+    .info-card.warning {
+        border-left-color: var(--accent-warning);
+    }
+
+    .info-card h3 {
         font-size: 1rem;
-        margin-bottom: 0.5rem;
+        margin-bottom: var(--space-4);
     }
 
-    .card p {
-        font-size: 0.875rem;
-        color: var(--text-secondary);
+    .info-card ul {
+        list-style: none;
         margin: 0;
+        padding: 0;
     }
 
-    .card.pandas {
-        border-left: 3px solid #150458;
+    .info-card li {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        padding: var(--space-1) 0;
+        padding-left: var(--space-4);
+        position: relative;
     }
-    .card.polars {
-        border-left: 3px solid #cd792c;
+
+    .info-card li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: var(--accent-primary);
     }
-    .card.duckdb {
-        border-left: 3px solid #fff000;
-    }
-    .card.bigquery {
-        border-left: 3px solid #4285f4;
+
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 1.75rem;
+        }
+        .intro {
+            font-size: 1rem;
+        }
     }
 </style>
