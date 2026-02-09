@@ -7,6 +7,7 @@
 #     "sqlalchemy",
 #     "pandas",
 #     "pyarrow",
+#     "connectorx",
 # ]
 # ///
 import polars as pl
@@ -19,8 +20,8 @@ df = pl.DataFrame({
 })
 
 # 1. Database Connection URI
-db_path = "penguins_pl.db"
-uri = f"sqlite:///./{db_path}"
+db_path = os.path.abspath("penguins_pl.db")
+uri = f"sqlite://{db_path}"
 
 # 2. Write to Database
 # - connection: DB URI or SQLAlchemy engine
