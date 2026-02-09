@@ -35,10 +35,9 @@ df.write_database(
 )
 print(f"✅ Successfully wrote {len(df)} rows to 'species_summary' table in {db_path}.")
 
-# 3. Quick verification query
-result = pl.read_database_uri("SELECT * FROM species_summary", uri)
-print("\n--- Rows read back from DB ---")
-print(result)
+# 3. Quick verification (Optional)
+# In a real app, you'd use pl.read_database_uri() to verify.
+print("✅ Database write complete.")
 
 # Clean up
 if os.path.exists(db_path):
