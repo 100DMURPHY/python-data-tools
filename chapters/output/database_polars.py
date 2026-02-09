@@ -35,7 +35,7 @@ df.write_database(
 print(f"✅ Successfully wrote {len(df)} rows to 'species_summary' table in {db_path}.")
 
 # 3. Quick verification query
-result = pl.read_database("SELECT * FROM species_summary", uri)
+result = pl.read_database_uri("SELECT * FROM species_summary", uri)
 print("\n--- Rows read back from DB ---")
 print(result)
 
