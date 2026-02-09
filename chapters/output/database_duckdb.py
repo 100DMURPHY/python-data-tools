@@ -3,6 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #     "duckdb",
+#     "pandas",
 # ]
 # ///
 import duckdb

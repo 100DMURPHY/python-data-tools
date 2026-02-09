@@ -4,6 +4,8 @@
 # dependencies = [
 #     "polars",
 #     "adbc-driver-sqlite",
+#     "sqlalchemy",
+#     "pandas",
 # ]
 # ///
 import polars as pl
