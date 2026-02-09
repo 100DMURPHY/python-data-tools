@@ -27,7 +27,7 @@ print(f"✅ Saved to Parquet: {parquet_path}")
 
 # 3. Save to JSON
 json_path = "penguins_summary_pl.json"
-df.write_json(json_path, row_oriented=True)
+df.write_json(json_path)
 print(f"✅ Saved to JSON: {json_path}")
 
 # Clean up
